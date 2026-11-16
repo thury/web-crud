@@ -1,0 +1,38 @@
+[Unit]
+Description=Gunicorn para web-crud (Django)
+After=network.target
+
+[Service]
+# Usuario sin privilegios; el grupo www-data permite que Nginx lea el socket
+User=webcrud
+Group=www-data
+WorkingDirectory=/srv/web-crud
+EnvironmentFile=/etc/web-crud/env
+
+# Crea /run/gunicorn (dueño webcrud:www-data) al arrancar y lo borra al detenerse
+RuntimeDirectory=gunicorn
+RuntimeDirectoryMode=0750
+
+# "config.wsgi" depende del nombre del proyecto Django (django-admin startproject config .)
+ExecStart=/srv/web-crud/venv/bin/gunicorn \
+    --workers 3 \
+    --bind unix:/run/gunicorn/web-crud.sock \
+    --umask 007 \
+    --access-logfile - \
+    --error-logfile - \
+    config.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+
+# Reinicio automático si el proceso falla
+Restart=on-failure
+RestartSec=3
+
+# Endurecimiento: Gunicorn solo puede escribir donde realmente lo necesita
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/web-crud/data /run/gunicorn
+
+[Install]
+WantedBy=multi-user.target
