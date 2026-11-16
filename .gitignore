@@ -7,3 +7,4 @@ backups/
 staticfiles/
 db.sqlite3
 .env
+web-crud.zip

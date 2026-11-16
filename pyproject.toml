@@ -1,8 +1,9 @@
 [project]
-name = "vercel-flask-starter"
+name = "web-crud"
 version = "0.1.0"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
-  "flask>=3.1,<4.0",
-  "gunicorn~=23.0.0"
+  "argon2-cffi==25.1.0",
+  "Django==5.2.19",
+  "gunicorn==27.0.1"
 ]
