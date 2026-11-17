@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import CampoPersonalizado
+from .models import CampoPersonalizado, Cliente, LineaPedido, Pedido, Producto
 
 PREFIJO = "extra_"
 
@@ -44,3 +44,34 @@ def formulario_con_extras(base, entidad):
     atributos = {PREFIJO + c.clave: c.campo_formulario() for c in campos}
     atributos["_campos_extras"] = campos
     return type(f"{base.__name__}ConExtras", (base,), atributos)
+
+
+class ProductoForm(FormularioConExtras):
+    class Meta:
+        model = Producto
+        fields = ["sku", "nombre", "descripcion", "precio", "stock", "stock_minimo", "activo"]
+
+
+class ClienteForm(FormularioConExtras):
+    class Meta:
+        model = Cliente
+        fields = ["nombre", "telefono", "email"]
+
+
+class PedidoForm(FormularioConExtras):
+    class Meta:
+        model = Pedido
+        fields = ["cliente", "notas"]
+
+
+class LineaPedidoForm(forms.ModelForm):
+    """Una línea de pedido. Solo ofrece productos activos."""
+
+    class Meta:
+        model = LineaPedido
+        fields = ["producto", "cantidad", "precio_unitario"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["producto"].queryset = Producto.objects.filter(activo=True)
+        self.fields["precio_unitario"].help_text = "Déjalo vacío para usar el precio actual."

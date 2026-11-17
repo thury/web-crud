@@ -1,0 +1,28 @@
+{% extends "tienda/base.html" %}
+{% block contenido %}
+<h1>Clientes</h1>
+<form method="get" class="busqueda">
+  <input name="q" value="{{ q }}" placeholder="Buscar por nombre, teléfono o correo">
+  <button type="submit">Buscar</button>
+  <a class="boton" href="{% url 'cliente_nuevo' %}">Nuevo cliente</a>
+</form>
+<div class="tabla-scroll">
+<table>
+  <thead>
+    <tr><th>Nombre</th><th>Teléfono</th><th>Correo</th>{% for c in columnas_extra %}<th>{{ c.nombre }}</th>{% endfor %}<th></th></tr>
+  </thead>
+  <tbody>
+  {% for c, extras in filas %}
+    <tr>
+      <td>{{ c.nombre }}</td><td>{{ c.telefono }}</td><td>{{ c.email }}</td>
+      {% for v in extras %}<td>{{ v }}</td>{% endfor %}
+      <td><a href="{% url 'cliente_editar' c.pk %}">Editar</a> · <a href="{% url 'cliente_borrar' c.pk %}">Borrar</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="99">No hay clientes.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% include "tienda/_paginacion.html" %}
+{% endblock %}

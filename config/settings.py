@@ -128,6 +128,11 @@ SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_AGE = 60 * 60 * 8  # la sesión caduca a las 8 horas
 CSRF_COOKIE_SAMESITE = "Lax"
 
+# Inicio de sesión: LoginRequiredMixin manda aquí a quien no ha entrado.
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "inicio"
+LOGOUT_REDIRECT_URL = "login"
+
 # --- HTTPS ------------------------------------------------------------------
 # Nginx termina el TLS y reenvía a Gunicorn con X-Forwarded-Proto. Si todavía
 # pruebas por HTTP en la LAN, pon DJANGO_HTTPS=0 temporalmente.

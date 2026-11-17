@@ -1,0 +1,31 @@
+{% extends "tienda/base.html" %}
+{% block contenido %}
+<h1>Pedidos</h1>
+<div class="acciones">
+  <a class="boton" href="{% url 'pedido_nuevo' %}">Nuevo pedido</a>
+  <a href="{% url 'pedido_lista' %}">Todos</a>
+  {% for valor, etiqueta in estados %}<a href="?estado={{ valor }}">{{ etiqueta }}</a>{% endfor %}
+</div>
+<div class="tabla-scroll">
+<table>
+  <thead>
+    <tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Total</th>{% for c in columnas_extra %}<th>{{ c.nombre }}</th>{% endfor %}</tr>
+  </thead>
+  <tbody>
+  {% for p, extras in filas %}
+    <tr>
+      <td><a href="{% url 'pedido_detalle' p.pk %}">#{{ p.pk }}</a></td>
+      <td>{{ p.fecha|date:"d/m/Y H:i" }}</td>
+      <td>{{ p.cliente|default:"Mostrador" }}</td>
+      <td><span class="estado {{ p.estado }}">{{ p.get_estado_display }}</span></td>
+      <td>${{ p.total }}</td>
+      {% for v in extras %}<td>{{ v }}</td>{% endfor %}
+    </tr>
+  {% empty %}
+    <tr><td colspan="99">No hay pedidos.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% include "tienda/_paginacion.html" %}
+{% endblock %}

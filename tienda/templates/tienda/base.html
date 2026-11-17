@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Inventario y pedidos{% endblock %}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; color: #1f2933; background: #f5f7fa; }
+    header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; padding: .6rem 1rem; background: #1f2933; }
+    header a, header button { color: #fff; text-decoration: none; margin-right: 1rem; background: none; border: 0; font: inherit; cursor: pointer; }
+    main { max-width: 64rem; margin: 1rem auto; padding: 0 1rem; }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #e4e7eb; }
+    tr.alerta td { background: #fff3cd; }
+    tr.inactivo td { color: #9aa5b1; }
+    .boton, button { padding: .35rem .8rem; border: 1px solid #1f2933; border-radius: 4px; background: #fff; color: #1f2933; text-decoration: none; cursor: pointer; font: inherit; }
+    .msg { padding: .6rem .8rem; border-radius: 4px; background: #e4e7eb; }
+    .msg.success { background: #d4edda; }
+    .msg.error { background: #f8d7da; }
+    .estado { font-size: .8rem; padding: .1rem .5rem; border-radius: 999px; background: #e4e7eb; }
+    .acciones { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 1rem 0; }
+    .acciones form { margin: 0; }
+    form.busqueda { display: flex; gap: .5rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+    .tabla-scroll { overflow-x: auto; }
+  </style>
+</head>
+<body>
+{% if user.is_authenticated %}
+<header>
+  <nav>
+    <a href="{% url 'inicio' %}">Inicio</a>
+    <a href="{% url 'producto_lista' %}">Productos</a>
+    <a href="{% url 'cliente_lista' %}">Clientes</a>
+    <a href="{% url 'pedido_lista' %}">Pedidos</a>
+    {% if user.is_staff %}<a href="{% url 'admin:index' %}">Administración</a>{% endif %}
+  </nav>
+  <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Salir ({{ user.get_username }})</button></form>
+</header>
+{% endif %}
+<main>
+  {% for m in messages %}<p class="msg {{ m.tags }}">{{ m }}</p>{% endfor %}
+  {% block contenido %}{% endblock %}
+</main>
+</body>
+</html>

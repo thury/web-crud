@@ -1,0 +1,10 @@
+{% extends "tienda/base.html" %}
+{% block contenido %}
+<h1>¿Borrar?</h1>
+<p>{{ object }}</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Sí, borrar</button>
+  <a href="{{ cancelar_url }}">Cancelar</a>
+</form>
+{% endblock %}
