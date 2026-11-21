@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>web-crud · Descripción general del sistema</title>
+<style>
+:root{
+  --bg:#f6f8f9; --surface:#ffffff; --ink:#14212b; --muted:#52636f; --line:#c9d5dc;
+  --accent:#0b6e8a; --accent-soft:#dcedf2; --warn:#8a5a0b; --warn-soft:#f6ecd8;
+  --font:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"Cascadia Code","SF Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0f171d; --surface:#17232b; --ink:#e5edf1; --muted:#9bb0bc; --line:#2d414d;
+  --accent:#5cc0dc; --accent-soft:#17323d; --warn:#e6b861; --warn-soft:#3a2f17;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.6;font-size:16px}
+main{max-width:860px;margin:0 auto;padding:48px 20px 80px}
+h1{font-size:2.3rem;line-height:1.15;margin:0 0 12px;letter-spacing:-.02em}
+h2{font-size:1.4rem;margin:56px 0 12px;padding-top:20px;border-top:1px solid var(--line)}
+h3{font-size:1.05rem;margin:24px 0 6px}
+p{margin:0 0 14px;max-width:70ch}
+code{font-family:var(--mono);font-size:.9em;background:var(--accent-soft);padding:1px 6px;border-radius:4px}
+.lead{font-size:1.15rem;color:var(--muted);max-width:62ch}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.badges li{border:1px solid var(--line);background:var(--surface);padding:3px 12px;border-radius:999px;font-size:.9rem}
+.fig{margin:20px 0 8px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:14px;overflow-x:auto}
+.fig svg{display:block;width:100%;min-width:620px;height:auto}
+figcaption{color:var(--muted);font-size:.9rem;margin:6px 0 0}
+table{border-collapse:collapse;width:100%;font-size:.95rem;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--accent-soft)}
+.tablewrap{overflow-x:auto}
+.note{border-left:4px solid var(--warn);background:var(--warn-soft);padding:10px 14px;border-radius:0 6px 6px 0;max-width:70ch}
+ul.plain{padding-left:20px;max-width:70ch}
+ul.plain li{margin-bottom:6px}
+pre{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;font-family:var(--mono);font-size:.85rem;line-height:1.5}
+/* SVG */
+.box{fill:var(--surface);stroke:var(--accent);stroke-width:1.6}
+.boxm{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6}
+.zone{fill:none;stroke:var(--muted);stroke-width:1.3;stroke-dasharray:6 5}
+.ln{stroke:var(--ink);stroke-width:1.6;fill:none}
+.lnd{stroke:var(--muted);stroke-width:1.5;fill:none;stroke-dasharray:5 4}
+.life{stroke:var(--line);stroke-width:1.5;stroke-dasharray:3 4}
+.t{fill:var(--ink);font:600 14px var(--font)}
+.s{fill:var(--muted);font:12px var(--font)}
+.m{fill:var(--ink);font:12px var(--mono)}
+.arrow{fill:var(--ink)}
+.arrowm{fill:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+
+<h1>web-crud</h1>
+<p class="lead">Aplicación web sencilla para que un negocio pequeño lleve su inventario y sus pedidos desde la red local, con columnas que el propio cliente puede agregar, como lo haría en Excel.</p>
+<ul class="badges">
+  <li>Django</li><li>Gunicorn</li><li>Nginx</li><li>SQLite</li><li>Servidor en el local del cliente</li><li>Docker (Windows)</li>
+</ul>
+
+<h2>Qué hace</h2>
+<ul class="plain">
+  <li><strong>Inventario:</strong> alta, consulta, edición y baja de productos.</li>
+  <li><strong>Pedidos:</strong> registro de pedidos con sus productos y cantidades.</li>
+  <li><strong>Columnas personalizadas:</strong> el cliente agrega sus propios campos a los datos sin tocar código.</li>
+  <li><strong>Acceso con login:</strong> solo entran usuarios autorizados, con sesión que expira.</li>
+</ul>
+
+<h2>Arquitectura</h2>
+<p>Todo corre en una sola máquina dentro del negocio. El navegador de cualquier equipo de la red local llega a Nginx, que atiende HTTPS y reenvía las peticiones a Gunicorn, y este ejecuta la aplicación Django. Los datos viven en un archivo SQLite dentro de <code>data/</code>.</p>
+
+<figure class="fig" style="margin-left:0;margin-right:0">
+<svg viewBox="0 0 840 240" role="img" aria-label="Arquitectura: navegador, Nginx, Gunicorn, Django y SQLite">
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" class="arrow"/></marker>
+  </defs>
+  <rect class="zone" x="165" y="28" width="668" height="196" rx="10"/>
+  <text class="s" x="180" y="48">Servidor local del cliente (systemd o Docker)</text>
+
+  <rect class="box" x="10" y="90" width="120" height="70" rx="8"/>
+  <text class="t" x="70" y="122" text-anchor="middle">Navegador</text>
+  <text class="s" x="70" y="141" text-anchor="middle">PC del negocio</text>
+
+  <rect class="boxm" x="190" y="90" width="120" height="70" rx="8"/>
+  <text class="t" x="250" y="122" text-anchor="middle">Nginx</text>
+  <text class="s" x="250" y="141" text-anchor="middle">HTTPS + headers</text>
+
+  <rect class="box" x="360" y="90" width="120" height="70" rx="8"/>
+  <text class="t" x="420" y="122" text-anchor="middle">Gunicorn</text>
+  <text class="s" x="420" y="141" text-anchor="middle">servidor WSGI</text>
+
+  <rect class="box" x="530" y="90" width="120" height="70" rx="8"/>
+  <text class="t" x="590" y="122" text-anchor="middle">Django</text>
+  <text class="s" x="590" y="141" text-anchor="middle">vistas, ORM, auth</text>
+
+  <rect class="box" x="700" y="90" width="120" height="70" rx="8"/>
+  <text class="t" x="760" y="122" text-anchor="middle">SQLite</text>
+  <text class="s" x="760" y="141" text-anchor="middle">data/db.sqlite3</text>
+
+  <path class="ln" d="M130 125H188" marker-end="url(#a1)"/>
+  <path class="ln" d="M310 125H358" marker-end="url(#a1)"/>
+  <path class="ln" d="M480 125H528" marker-end="url(#a1)"/>
+  <path class="ln" d="M650 125H698" marker-end="url(#a1)"/>
+  <text class="s" x="159" y="116" text-anchor="middle">LAN</text>
+  <text class="s" x="334" y="116" text-anchor="middle">proxy</text>
+  <text class="s" x="504" y="116" text-anchor="middle">WSGI</text>
+  <text class="s" x="674" y="116" text-anchor="middle">ORM</text>
+</svg>
+</figure>
+<figcaption>Nginx es la única puerta de entrada; Gunicorn y Django no se exponen directamente a la red.</figcaption>
+
+<h3>Por qué estas piezas</h3>
+<ul class="plain">
+  <li><strong>Nginx</strong> termina HTTPS, agrega headers de seguridad y entrega los archivos estáticos.</li>
+  <li><strong>Gunicorn</strong> ejecuta Django con varios procesos; Django no está pensado para exponerse solo.</li>
+  <li><strong>Django</strong> aporta login, sesiones, protección CSRF y un ORM que evita armar SQL a mano.</li>
+  <li><strong>SQLite</strong> basta para un negocio con poca carga y no requiere instalar otro servicio.</li>
+</ul>
+
+<h2>Recorrido de una petición</h2>
+<p>Ejemplo: una persona inicia sesión.</p>
+<figure class="fig" style="margin-left:0;margin-right:0">
+<svg viewBox="0 0 760 330" role="img" aria-label="Secuencia de inicio de sesión">
+  <defs>
+    <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" class="arrow"/></marker>
+    <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" class="arrowm"/></marker>
+  </defs>
+  <rect class="boxm" x="20" y="8" width="120" height="34" rx="6"/><text class="t" x="80" y="30" text-anchor="middle">Navegador</text>
+  <rect class="boxm" x="220" y="8" width="120" height="34" rx="6"/><text class="t" x="280" y="30" text-anchor="middle">Nginx</text>
+  <rect class="boxm" x="420" y="8" width="120" height="34" rx="6"/><text class="t" x="480" y="30" text-anchor="middle">Gunicorn + Django</text>
+  <rect class="boxm" x="620" y="8" width="120" height="34" rx="6"/><text class="t" x="680" y="30" text-anchor="middle">SQLite</text>
+  <path class="life" d="M80 42V320M280 42V320M480 42V320M680 42V320"/>
+
+  <path class="ln" d="M80 82H278" marker-end="url(#a2)"/><text class="m" x="90" y="75">POST /login (HTTPS)</text>
+  <path class="ln" d="M280 122H478" marker-end="url(#a2)"/><text class="m" x="290" y="115">proxy_pass</text>
+  <path class="ln" d="M480 162H678" marker-end="url(#a2)"/><text class="m" x="490" y="155">busca usuario (ORM)</text>
+  <path class="lnd" d="M678 202H482" marker-end="url(#a3)"/><text class="m" x="500" y="195">usuario + hash</text>
+  <path class="lnd" d="M478 242H282" marker-end="url(#a3)"/><text class="m" x="290" y="235">Set-Cookie Secure, HttpOnly</text>
+  <path class="lnd" d="M278 282H82" marker-end="url(#a3)"/><text class="m" x="90" y="275">302 a /inventario</text>
+</svg>
+</figure>
+<figcaption>Django compara el hash de la contraseña; si es válido crea la sesión y la cookie viaja solo por HTTPS.</figcaption>
+
+<h2>Modelo de datos</h2>
+<p>Modelo propuesto. Las columnas personalizadas se guardan aparte del producto para que agregar una no requiera cambiar la base de datos.</p>
+<figure class="fig" style="margin-left:0;margin-right:0">
+<svg viewBox="0 0 760 430" role="img" aria-label="Diagrama entidad-relación">
+  <rect class="box" x="10" y="20" width="180" height="90" rx="6"/>
+  <text class="t" x="24" y="42">Usuario</text>
+  <text class="m" x="24" y="62">username</text><text class="m" x="24" y="80">password (hash)</text><text class="m" x="24" y="98">rol</text>
+
+  <rect class="box" x="290" y="20" width="180" height="90" rx="6"/>
+  <text class="t" x="304" y="42">Pedido</text>
+  <text class="m" x="304" y="62">fecha</text><text class="m" x="304" y="80">estado</text><text class="m" x="304" y="98">usuario</text>
+
+  <rect class="box" x="290" y="170" width="180" height="90" rx="6"/>
+  <text class="t" x="304" y="192">DetallePedido</text>
+  <text class="m" x="304" y="212">pedido</text><text class="m" x="304" y="230">producto</text><text class="m" x="304" y="248">cantidad</text>
+
+  <rect class="boxm" x="570" y="170" width="180" height="90" rx="6"/>
+  <text class="t" x="584" y="192">Producto</text>
+  <text class="m" x="584" y="212">nombre</text><text class="m" x="584" y="230">precio</text><text class="m" x="584" y="248">existencias</text>
+
+  <rect class="box" x="570" y="320" width="180" height="90" rx="6"/>
+  <text class="t" x="584" y="342">ValorPersonalizado</text>
+  <text class="m" x="584" y="362">producto</text><text class="m" x="584" y="380">columna</text><text class="m" x="584" y="398">valor</text>
+
+  <rect class="box" x="290" y="320" width="180" height="90" rx="6"/>
+  <text class="t" x="304" y="342">ColumnaPersonalizada</text>
+  <text class="m" x="304" y="362">nombre</text><text class="m" x="304" y="380">tipo</text>
+
+  <path class="ln" d="M190 65H290"/><text class="s" x="196" y="58">1</text><text class="s" x="274" y="58">N</text>
+  <path class="ln" d="M380 110V170"/><text class="s" x="386" y="128">1</text><text class="s" x="386" y="162">N</text>
+  <path class="ln" d="M470 215H570"/><text class="s" x="476" y="208">N</text><text class="s" x="554" y="208">1</text>
+  <path class="ln" d="M660 260V320"/><text class="s" x="666" y="278">1</text><text class="s" x="666" y="312">N</text>
+  <path class="ln" d="M470 365H570"/><text class="s" x="476" y="358">1</text><text class="s" x="554" y="358">N</text>
+</svg>
+</figure>
+<figcaption>Un pedido tiene varios renglones; cada producto puede tener un valor por cada columna personalizada.</figcaption>
+
+<h2>Seguridad</h2>
+<p>Cada medida corresponde a una lista de seguridad del tablero de Trello.</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Área</th><th>Medida</th></tr></thead>
+  <tbody>
+    <tr><td>Login y hashing</td><td>Contraseñas con Argon2 o PBKDF2 de Django; bloqueo temporal tras varios intentos fallidos.</td></tr>
+    <tr><td>Sesiones</td><td>Cookies <code>Secure</code> y <code>HttpOnly</code>, con expiración.</td></tr>
+    <tr><td>Validación de inputs</td><td>Validación en el servidor, con atención especial a los nombres y valores de las columnas personalizadas.</td></tr>
+    <tr><td>SQL injection</td><td>Solo consultas por ORM, sin SQL armado con texto del usuario.</td></tr>
+    <tr><td>XSS</td><td>Autoescape de plantillas activo; sin <code>|safe</code> sobre datos del usuario.</td></tr>
+    <tr><td>CSRF</td><td>Token CSRF en todos los formularios que modifican datos.</td></tr>
+    <tr><td>Configuración</td><td><code>DEBUG=False</code>, <code>SECRET_KEY</code> fuera del repositorio y <code>ALLOWED_HOSTS</code> definido.</td></tr>
+    <tr><td>Transporte</td><td>HTTPS en la red local con certificado autofirmado y headers de seguridad en Nginx.</td></tr>
+  </tbody>
+</table>
+</div>
+<p style="margin-top:14px">Se está considerando un agente de IA que pruebe estas protecciones de forma automática.</p>
+
+<h2>Despliegue</h2>
+<ul class="plain">
+  <li><strong>En el local del cliente:</strong> una PC o mini servidor dentro de la red del negocio. No usa VPS, así que no depende de que el proveedor de internet abra puertos.</li>
+  <li><strong>Linux:</strong> <code>deploy.sh</code> prepara el entorno, Gunicorn corre como servicio de systemd y Nginx hace de proxy.</li>
+  <li><strong>Windows:</strong> la aplicación se empaqueta con Docker para correr igual en ambos sistemas.</li>
+</ul>
+<p class="note">La base de datos SQLite está en <code>data/</code>. Esa carpeta es la que hay que respaldar.</p>
+
+<h2>Estado y siguientes pasos</h2>
+<ol class="plain">
+  <li>Login y vistas CRUD de inventario y pedidos.</li>
+  <li>Medidas de seguridad de la aplicación.</li>
+  <li>Nginx con HTTPS y arranque con systemd.</li>
+  <li>Dockerización para Windows.</li>
+  <li>Pruebas de seguridad, posiblemente con un agente de IA.</li>
+</ol>
+
+<h2>Repositorio</h2>
+<pre>github.com/thury/web-crud
+└── web-crud/        # carpeta con manage.py
+    └── data/        # base de datos SQLite</pre>
+
+</main>
+</body>
+</html>
